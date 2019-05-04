@@ -10,7 +10,7 @@ class WebSocket{
 
     public function __construct() {
         // 获取 key 有值 del
-        $this->ws = new swoole_websocket_server(self::HOST, self::PORT);
+        $this->ws = new \swoole_websocket_server(self::HOST, self::PORT);
         \SwooleServer::getInstance()->setSwooleServer($this->ws);
         $this->ws->set(
             [
@@ -189,4 +189,4 @@ class WebSocket{
 
     }
 }
-
+new WebSocket();
