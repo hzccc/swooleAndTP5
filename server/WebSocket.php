@@ -11,8 +11,7 @@ class WebSocket{
     public function __construct() {
         // 获取 key 有值 del
         $this->ws = new \swoole_websocket_server(self::HOST, self::PORT);
-//	$obj = __DIR__.'/../extend/swooleobj/SwooleServer.php';
-//        \SwooleServer::getInstance()->setSwooleServer($this->ws);
+        \swooleobj\SwooleServer::getInstance()->setSwooleServer($this->ws);
         $this->ws->set(
             [
                 'enable_static_handler' => true,

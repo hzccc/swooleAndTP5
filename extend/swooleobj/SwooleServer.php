@@ -3,7 +3,7 @@ namespace swooleobj;
 use Swoole\WebSocket\Server;
 class SwooleServer{
 
-    private $instance;
+    private static $instance;
     protected  $swoole_server;
 
     /**
