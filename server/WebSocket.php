@@ -115,19 +115,12 @@ class WebSocket{
     public function onTask($serv, $taskId, $workerId, $data) {
 
         // 分发 task 任务机制，让不同的任务 走不同的逻辑
-        $obj = new app\common\lib\task\Task;
+        $obj = new app\common\lib\Task;
 
         $method = $data['method'];
-        $flag = $obj->$method($data['data'], $serv);
-        /*$obj = new app\common\lib\ali\Sms();
-        try {
-            $response = $obj::sendSms($data['phone'], $data['code']);
-        }catch (\Exception $e) {
-            // todo
-            echo $e->getMessage();
-        }*/
+        $flag = $obj->$method($data['data']);
 
-        return $flag; // 告诉worker
+        return $flag; 
     }
 
     /**
@@ -146,9 +139,9 @@ class WebSocket{
      * @param $request
      */
     public function onOpen($ws, $request) {
-        // fd redis [1]
-        \app\common\lib\redis\Predis::getInstance()->sAdd(config('redis.live_game_key'), $request->fd);
-        var_dump($request->fd);
+        // 记录fd与用户名关系
+        //\app\common\lib\Predis::getInstance()->sAdd($request->fd);
+        
     }
 
     /**
@@ -157,8 +150,10 @@ class WebSocket{
      * @param $frame
      */
     public function onMessage($ws, $frame) {
-        echo "ser-push-message:{$frame->data}\n";
-        $ws->push($frame->fd, "server-push:".date("Y-m-d H:i:s"));
+        //收到信息后逻辑提交给message类做 
+        $obj = new app\common\lib\Message;
+
+        
     }
 
     /**
@@ -168,25 +163,9 @@ class WebSocket{
      */
     public function onClose($ws, $fd) {
         // fd del
-        \app\common\lib\redis\Predis::getInstance()->sRem(config('redis.live_game_key'), $fd);
+        \app\common\lib\Predis::getInstance()->sRem($fd);
         echo "clientid:{$fd}\n";
     }
 
-    /**
-     * 记录日志
-     */
-    public function writeLog() {
-        $datas = array_merge(['date' => date("Ymd H:i:s")],$_GET, $_POST, $_SERVER);
-
-        $logs = "";
-        foreach($datas as $key => $value) {
-            $logs .= $key . ":" . $value . " ";
-        }
-
-        swoole_async_writefile(APP_PATH.'../runtime/log/'.date("Ym")."/".date("d")."_access.log", $logs.PHP_EOL, function($filename){
-            // todo
-        }, FILE_APPEND);
-
-    }
 }
 new WebSocket();
