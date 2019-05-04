@@ -117,8 +117,7 @@ class WebSocket{
         // 分发 task 任务机制，让不同的任务 走不同的逻辑
         $obj = new app\common\lib\Task;
 
-        $method = $data['method'];
-        $flag = $obj->$method($data['data']);
+        $flag = $obj->sendAll($data);
 
         return $flag; 
     }
@@ -152,7 +151,10 @@ class WebSocket{
     public function onMessage($ws, $frame) {
         //收到信息后逻辑提交给message类做 
         $obj = new app\common\lib\Message;
-
+        //组装信息发送给Message类
+        $data = $frame->data;
+        $fromId = $frame->fd;
+        $obj->msgHandOut($data,$fromId);
         
     }
 
