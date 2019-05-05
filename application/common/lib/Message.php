@@ -10,7 +10,7 @@ class Message{
     public function msgHandOut($data,$fromId){
         //解析$data
         $swooleServer = SwooleServer::getInstance()->getSwooleServer();
-        $data = json_decode($data);
+        //$data = json_decode($data);
         $type = $data['type'];
         $data = [
             'data' => $data['data'],

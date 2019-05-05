@@ -1,6 +1,8 @@
 <?php
-namespace server;
 include(__DIR__.'/../extend/swooleobj/SwooleServer.php');
+use app\common\lib\Message;
+use app\common\lib\Task;
+use app\common\lib\Predis;
 class WebSocket{
     CONST HOST = "0.0.0.0";
     CONST PORT = 8811;
@@ -10,8 +12,8 @@ class WebSocket{
 
     public function __construct() {
         // 获取 key 有值 del
-        $this->ws = new \swoole_websocket_server(self::HOST, self::PORT);
-        \swooleobj\SwooleServer::getInstance()->setSwooleServer($this->ws);
+        $this->ws = new swoole_websocket_server(self::HOST, self::PORT);
+        swooleobj\SwooleServer::getInstance()->setSwooleServer($this->ws);
         $this->ws->set(
             [
                 'enable_static_handler' => true,
@@ -47,7 +49,7 @@ class WebSocket{
         // 定义应用目录
         define('APP_PATH', __DIR__ . '/../application/');
         // 加载框架里面的文件
-        require __DIR__ . '/../thinkphp/base.php';
+        require __DIR__ . '/../thinkphp/start.php';
     }
 
     /**
@@ -96,11 +98,11 @@ class WebSocket{
         ob_start();
         // 执行应用并响应
         try {
-            \think\App::run()->send();
+            think\App::run()->send();
         }catch (\Exception $e) {
             // todo
         }
-
+	$response->header('Content-Type','text/html; charset=utf-8');
         $res = ob_get_contents();
         ob_end_clean();
         $response->end($res);
@@ -115,7 +117,7 @@ class WebSocket{
     public function onTask($serv, $taskId, $workerId, $data) {
 
         // 分发 task 任务机制，让不同的任务 走不同的逻辑
-        $obj = new app\common\lib\Task;
+        $obj = new app\common\lib\Task();
 
         $flag = $obj->sendAll($data);
 
@@ -150,10 +152,19 @@ class WebSocket{
      */
     public function onMessage($ws, $frame) {
         //收到信息后逻辑提交给message类做 
-        $obj = new app\common\lib\Message;
-        //组装信息发送给Message类
+       // $obj = new Message();
+        //组装信息发送给Meissage类
+	//think\App::run()->send();
+	$data = [
+	    'data' => $frame->data,
+	    'fd' => $frame->fd
+	];
+	$obj = new Message();
+	//$ws->task($data);
         $data = $frame->data;
-        $fromId = $frame->fd;
+	$data = json_decode($data,true);
+        dump($data);
+	$fromId = $frame->fd;
         $obj->msgHandOut($data,$fromId);
         
     }
@@ -165,7 +176,7 @@ class WebSocket{
      */
     public function onClose($ws, $fd) {
         // fd del
-        \app\common\lib\Predis::getInstance()->sRem($fd);
+       // \app\common\lib\Predis::getInstance()->sRem($fd);
         echo "clientid:{$fd}\n";
     }
 

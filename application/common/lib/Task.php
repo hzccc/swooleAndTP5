@@ -7,13 +7,13 @@ class Task{
 
 
 
-    public function sendAll($data,$fromId){
+    public function sendAll($data){
         $swooleServer = SwooleServer::getInstance()->getSwooleServer();
         foreach($swooleServer->connections as $fd){
-            if($fd == $fromId){
+            if($fd == $data['fd']){
                 continue;
             }
-            $swooleServer->push($fd,$data);
+            $swooleServer->push($fd,$data['data']);
         }
     }
 }
