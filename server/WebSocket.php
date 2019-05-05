@@ -181,4 +181,3 @@ class WebSocket{
     }
 
 }
-new WebSocket();
