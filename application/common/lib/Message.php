@@ -2,7 +2,7 @@
 namespace app\common\lib;
 
 use swooleobj\SwooleServer;
-
+use app\common\lib\Predis;
 class Message{
 
     //简单的做一下Task任务分发
