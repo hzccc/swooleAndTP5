@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+    <title>Document</title>
+    <link href="chat.css"  rel="stylesheet" type="text/css">
+</head>
+<style>
+
+</style>
+<body>
+    
+    <div id="app">
+
+        <div class="main">
+            <div class="main-title"></div>
+            <div class="content" id="message-box">
+                <span v-for="item in conList">
+                <div class="left-content" v-if="item.sign != 1">
+                    <div class="chat-img">
+                        <img src="" alt="">
+                    </div>
+                    <div class="conv1">
+                        <div>2018-09-12 19:23:00</div>
+                        <div class="chat-content">{{item.data}}</div>
+                    </div>
+                </div>
+
+                <div class="right-content" v-if="item.sign == 1">
+                    <div class="con">
+                        <div>2018-09-12 19:23:00</div>
+                        <div class="chat-contentv1">{{item.data}}</div>
+                    </div>
+                    <div class="chat-imgv1">
+                        <img src="" alt="">
+                    </div>
+                </div>
+            </span> 
+            </div>
+            <div class="inp">
+                <textarea type="text" v-model="sendtxt  " class="inp-con">{{sendtxt}}</textarea>
+                <button class="btn"  v-on:click="btn">发送</button>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+<script>
+var div = document.getElementById('message-box');
+
+div.scrollTop = div.scrollHeight;   
+
+
+    var vm = new Vue({
+        el:"#app",
+        data:{
+            conList:[],
+            sendtxt:'',
+
+        },
+        created:function(){
+            this.initWebSocket();
+        },
+        destroyed: function() {
+　　　　　　this.websocketclose();
+　　　　 },
+        methods: {
+            btn: function (e) {
+                this.$nextTick(() => {
+                    let msg = document.getElementById('message-box') // 获取对象
+                    msg.scrollTop = msg.scrollHeight // 滚动高度
+                    console.log(msg.scrollTop);
+                })
+                if (this.sendtxt == '') {
+                    alert('发送内容不能为空');
+                } else {
+                    let arr = {
+                        img: '',
+                        data: this.sendtxt,
+                        sign: 1,
+                        type: 'msg'
+                    }
+                    this.conList.push(arr);
+                    arr = JSON.stringify(arr);
+                    console.log(arr);
+                    this.websocketsend(arr);
+                    this.sendtxt = '';
+                    
+                }
+
+            },
+            initWebSocket() { 
+
+                const wsuri = 'ws://47.106.107.177:8811/';
+                this.websocket = new WebSocket(wsuri);
+                this.websocket.onopen = this.websocketonopen;
+
+                this.websocket.onerror = this.websocketonerror;
+
+                this.websocket.onmessage = this.websocketonmessage;
+                this.websocket.onclose = this.websocketclose;
+            },
+
+            websocketonopen() {
+                console.log("WebSocket连接成功");
+            },
+            websocketonerror(e) {
+                console.log("WebSocket连接发生错误");
+            },
+            websocketonmessage(e) { 
+                const redata = e;
+                console.log(redata.data);
+                let arr = {
+                    img:'',
+                    data:redata.data
+                };
+                this.conList.push(arr);
+            },
+
+            websocketsend(agentData) {
+                this.websocket.send(agentData);
+            },
+
+            websocketclose(e) { 
+                console.log("connection closed (" + e.code + ")");
+            },
+
+        }
+
+
+
+    })
+
+</script>
+</html>
