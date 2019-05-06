@@ -17,7 +17,7 @@ class WebSocket{
         $this->ws->set(
             [
                 'enable_static_handler' => true,
-                'document_root' => "/home/wsdemo/public/static",
+                'document_root' => "/home/wsdemo/swooleAndTP5/public/static",
                 'worker_num' => 1,
                 'task_worker_num' => 4,
             ]
@@ -141,7 +141,6 @@ class WebSocket{
      */
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
-	setcookie('test','test');
         //\app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
