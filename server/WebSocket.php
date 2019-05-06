@@ -141,6 +141,7 @@ class WebSocket{
      */
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
+	setcookie('test','test');
         //\app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
