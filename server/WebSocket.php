@@ -19,7 +19,7 @@ class WebSocket{
                 'enable_static_handler' => true,
                 'document_root' => "/home/wsdemo/swooleAndTP5/public/static",
                 'worker_num' => 1,
-                'task_worker_num' => 4,
+                'task_worker_num' => 1 ,
             ]
         );
 
@@ -58,11 +58,12 @@ class WebSocket{
      * @param $response
      */
     public function onRequest($request, $response) {
-        if($request->server['request_uri'] == '/favicon.ico') {
-            $response->status(404);
-            $response->end();
-            return ;
-        }
+	$response->header('Content-Type','text/html; charset=utf-8');
+	$uri = $request->server['request_uri'];
+	if ($uri == '/favicon.ico') {
+   	     $response->status(404);
+   	     $response->end();
+	}
         $_SERVER  =  [];
         if(isset($request->server)) {
             foreach($request->server as $k => $v) {
@@ -74,7 +75,7 @@ class WebSocket{
                 $_SERVER[strtoupper($k)] = $v;
             }
         }
-
+	dump($_SERVER);
         $_GET = [];
         if(isset($request->get)) {
             foreach($request->get as $k => $v) {
@@ -93,8 +94,6 @@ class WebSocket{
                 $_POST[$k] = $v;
             }
         }
-
-
         ob_start();
         // 执行应用并响应
         try {
@@ -102,7 +101,7 @@ class WebSocket{
         }catch (\Exception $e) {
             // todo
         }
-	$response->header('Content-Type','text/html; charset=utf-8');
+//	$response->header('Content-Type','text/html; charset=utf-8');
         $res = ob_get_contents();
         ob_end_clean();
         $response->end($res);

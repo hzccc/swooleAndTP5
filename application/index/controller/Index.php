@@ -1,14 +1,17 @@
 <?php
 namespace app\index\controller;
-
-class Index
+use think\Controller;
+class Index extends Controller
 {
     public function index()
-    {	
-	return 0; 
+    {
+	echo request()->action();	
+	return '这里是index/index/index'; 
     }
     public function demo(){
-	setcookie('test','123');
+	
+	echo '这里是index/index/demo';
+	echo request()->action();
     }
     
 }

@@ -624,7 +624,6 @@ class App
         $path   = $request->path();
         $depr   = $config['pathinfo_depr'];
         $result = false;
-
         // 路由检测
         $check = !is_null(self::$routeCheck) ? self::$routeCheck : $config['url_route_on'];
         if ($check) {
