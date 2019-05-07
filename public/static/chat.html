@@ -66,6 +66,9 @@ div.scrollTop = div.scrollHeight;
 
         },
         created:function(){
+            this.$http.get('http://47.106.107.177:8811/?s=index/index/demo').then(function (res) {
+                console.log(res)
+            });
             this.initWebSocket();
         },
         destroyed: function() {
