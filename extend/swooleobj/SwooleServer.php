@@ -4,8 +4,10 @@ use Swoole\WebSocket\Server;
 class SwooleServer{
 
     private static $instance;
-    protected  $swoole_server;
-
+    protected $swoole_server;
+    protected $res;
+    //后期优化成类对象树.
+    protected $serverObj = [];
     /**
      * 防止外部new
      */
@@ -30,5 +32,12 @@ class SwooleServer{
 
     public function getSwooleServer(){
         return $this->swoole_server;
+    }
+
+    public function setRes($res){
+        $this->$res = $res;
+    }
+    public function getRes(){
+        return $this->$res;
     }
 }
