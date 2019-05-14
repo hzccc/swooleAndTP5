@@ -19,7 +19,7 @@ class WebSocket{
                 'enable_static_handler' => true,
                 'document_root' => "/home/wsdemo/swooleAndTP5/public/static",
                 'worker_num' => 1,
-                'task_worker_num' => 1 ,
+                'task_worker_num' => 4 ,
             ]
         );
 
@@ -64,6 +64,7 @@ class WebSocket{
    	     $response->status(404);
    	     $response->end();
 	}
+       // swooleobj\SwooleServer::getInstance()->setRes($response);
         $_SERVER  =  [];
         if(isset($request->server)) {
             foreach($request->server as $k => $v) {
@@ -75,11 +76,17 @@ class WebSocket{
                 $_SERVER[strtoupper($k)] = $v;
             }
         }
-	dump($_SERVER);
         $_GET = [];
         if(isset($request->get)) {
             foreach($request->get as $k => $v) {
                 $_GET[$k] = $v;
+            }
+        }
+	$_COOKIE = [];
+		
+        if(isset($request->cookie)) {
+            foreach($request->cookie as $k => $v) {
+                $_COOKIE[$k] = $v;
             }
         }
         $_FILES = [];
@@ -140,7 +147,9 @@ class WebSocket{
      */
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
-        //\app\common\lib\Predis::getInstance()->sAdd($request->fd);
+	echo $request->fd;
+	
+        \app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
 
@@ -175,7 +184,7 @@ class WebSocket{
      */
     public function onClose($ws, $fd) {
         // fd del
-       // \app\common\lib\Predis::getInstance()->sRem($fd);
+        \app\common\lib\Predis::getInstance()->sRem($fd);
         echo "clientid:{$fd}\n";
     }
 

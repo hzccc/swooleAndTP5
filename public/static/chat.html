@@ -66,15 +66,26 @@ div.scrollTop = div.scrollHeight;
 
         },
         created:function(){
-            this.$http.get('http://47.106.107.177:8811/?s=index/index/demo').then(function (res) {
+            this.$http.get('http://47.106.107.177:8811/index/index/demo').then(function (res) {
                 console.log(res)
             });
             this.initWebSocket();
+	    this.ojk();
         },
         destroyed: function() {
 　　　　　　this.websocketclose();
 　　　　 },
         methods: {
+
+	    ojk: function (e){		
+		         	
+            this.$http.get('http://47.106.107.177:8811/index/index/checkLogin').then(function (res) {
+                console.log(res)
+            });
+
+
+   	
+	    },
             btn: function (e) {
                 this.$nextTick(() => {
                     let msg = document.getElementById('message-box') // 获取对象

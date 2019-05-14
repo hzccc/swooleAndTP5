@@ -1,6 +1,7 @@
 <?php
 namespace swooleobj;
 use Swoole\WebSocket\Server;
+use Swoole\Http\Response;
 class SwooleServer{
 
     private static $instance;
@@ -34,10 +35,10 @@ class SwooleServer{
         return $this->swoole_server;
     }
 
-    public function setRes($res){
-        $this->$res = $res;
+    public function setRes(Response $res){
+        $this->res = $res;
     }
     public function getRes(){
-        return $this->$res;
+        return $this->res;
     }
 }
