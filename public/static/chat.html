@@ -66,21 +66,23 @@ div.scrollTop = div.scrollHeight;
 
         },
         created:function(){
-            this.$http.get('http://47.106.107.177:8811/index/index/demo').then(function (res) {
-                console.log(res)
-            });
-            this.initWebSocket();
-	    this.ojk();
+	        this.ojk();
         },
         destroyed: function() {
 　　　　　　this.websocketclose();
 　　　　 },
         methods: {
 
-	    ojk: function (e){		
+	    ojk: function (){		
 		         	
             this.$http.get('http://47.106.107.177:8811/index/index/checkLogin').then(function (res) {
-                console.log(res)
+                if(res.data.status == 1){
+                    this.initWebSocket();
+                    let arr = {
+                        data: this.sendtxt,
+                        type: 'init'
+                    }
+                }
             });
 
 
