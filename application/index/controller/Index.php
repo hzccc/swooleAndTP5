@@ -23,8 +23,15 @@ class Index extends Controller
 
     public function login(){
         $request = Request::instance();
-        if($request->isPost()){
-            setcookie('userInfo',$userInfo,time()+500,'/');
+        if($request->isGet()){
+	    $res = SwooleServer::getInstance()->getRes();
+	    $userInfo = [
+		'userID' => 1,
+		'userName'=>'黄英雄'
+	    ];
+	    $userInfo = serialize($userInfo);
+	    $res->cookie('userInfo',$userInfo);
+          //  setcookie('userInfo',$userInfo,time()+500,'/');
             //假装登录
             $arr = [
                 "status" => 1,

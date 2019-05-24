@@ -64,7 +64,7 @@ class WebSocket{
    	     $response->status(404);
    	     $response->end();
 	}
-       // swooleobj\SwooleServer::getInstance()->setRes($response);
+        swooleobj\SwooleServer::getInstance()->setRes($response);
         $_SERVER  =  [];
         if(isset($request->server)) {
             foreach($request->server as $k => $v) {

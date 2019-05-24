@@ -76,13 +76,17 @@ div.scrollTop = div.scrollHeight;
 	    ojk: function (){		
 		         	
             this.$http.get('http://47.106.107.177:8811/index/index/checkLogin').then(function (res) {
-                if(res.data.status == 1){
+		console.log(res)
+                if(res.body.status == 1){
                     this.initWebSocket();
                     let arr = {
                         data: this.sendtxt,
                         type: 'init'
                     }
-                }
+                } else {
+		    console.log(res.body.status);		
+
+		}
             });
 
 
