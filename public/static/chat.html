@@ -55,108 +55,103 @@
 <script>
 var div = document.getElementById('message-box');
 
-div.scrollTop = div.scrollHeight;   
+div.scrollTop = div.scrollHeight;
 
 
-    var vm = new Vue({
-        el:"#app",
-        data:{
-            conList:[],
-            sendtxt:'',
-
-        },
-        created:function(){
-	        this.ojk();
-        },
-        destroyed: function() {
-　　　　　　this.websocketclose();
-　　　　 },
-        methods: {
-
-	    ojk: function (){		
-		         	
+var vm = new Vue({
+    el: "#app",
+    data: {
+        conList: [],
+        sendtxt: '',
+        websocket: ''
+    },
+    created: function () {
+        this.init();
+    },
+    destroyed: function () {
+        this.websocketclose();
+    },
+    methods: {
+        init: function () {
             this.$http.get('http://47.106.107.177:8811/index/index/checkLogin').then(function (res) {
-		console.log(res)
-                if(res.body.status == 1){
+                console.log(res.data)
+                if (res.data.static == 1) {
                     this.initWebSocket();
+                    $userInfo = res.data.data;
                     let arr = {
-                        data: this.sendtxt,
+                        data: $userInfo,
                         type: 'init'
                     }
-                } else {
-		    console.log(res.body.status);		
-
-		}
-            });
-
-
-   	
-	    },
-            btn: function (e) {
-                this.$nextTick(() => {
-                    let msg = document.getElementById('message-box') // 获取对象
-                    msg.scrollTop = msg.scrollHeight // 滚动高度
-                    console.log(msg.scrollTop);
-                })
-                if (this.sendtxt == '') {
-                    alert('发送内容不能为空');
-                } else {
-                    let arr = {
-                        img: '',
-                        data: this.sendtxt,
-                        sign: 1,
-                        type: 'msg'
-                    }
-                    this.conList.push(arr);
                     arr = JSON.stringify(arr);
-                    console.log(arr);
-                    this.websocketsend(arr);
-                    this.sendtxt = '';
                     
+                } else {
+                    window.location.href = "login.html";
+
                 }
-
-            },
-            initWebSocket() { 
-
-                const wsuri = 'ws://47.106.107.177:8811/';
-                this.websocket = new WebSocket(wsuri);
-                this.websocket.onopen = this.websocketonopen;
-
-                this.websocket.onerror = this.websocketonerror;
-
-                this.websocket.onmessage = this.websocketonmessage;
-                this.websocket.onclose = this.websocketclose;
-            },
-
-            websocketonopen() {
-                console.log("WebSocket连接成功");
-            },
-            websocketonerror(e) {
-                console.log("WebSocket连接发生错误");
-            },
-            websocketonmessage(e) { 
-                const redata = e;
-                console.log(redata.data);
+            });
+        },
+        btn: function (e) {
+            this.$nextTick(() => {
+                let msg = document.getElementById('message-box') // 获取对象
+                msg.scrollTop = msg.scrollHeight // 滚动高度
+                console.log(msg.scrollTop);
+            })
+            if (this.sendtxt == '') {
+                alert('发送内容不能为空');
+            } else {
                 let arr = {
-                    img:'',
-                    data:redata.data
-                };
+                    img: '',
+                    data: this.sendtxt,
+                    sign: 1,
+                    type: 'msg'
+                }
                 this.conList.push(arr);
-            },
+                arr = JSON.stringify(arr);
+                console.log(arr);
+                this.websocketsend(arr);
+                this.sendtxt = '';
 
-            websocketsend(agentData) {
-                this.websocket.send(agentData);
-            },
+            }
 
-            websocketclose(e) { 
-                console.log("connection closed (" + e.code + ")");
-            },
+        },
+        initWebSocket() {
+            const wsuri = 'ws://47.106.107.177:8811/';
+            this.websocket = new WebSocket(wsuri);
+            this.websocket.onopen = this.websocketonopen;
+            this.websocket.onerror = this.websocketonerror;
+            this.websocket.onmessage = this.websocketonmessage;
+            this.websocket.onclose = this.websocketclose;
+        },
 
-        }
+        websocketonopen(e) {
+            console.log("WebSocket连接成功");
+        },
+        websocketonerror(e) {
+            console.log("WebSocket连接发生错误");
+        },
+        websocketonmessage(e) {
+            const redata = e;
+            console.log(redata.data);
+            let arr = {
+                img: '',
+                data: redata.data
+            };
+            this.conList.push(arr);
+        },
+
+        websocketsend(agentData) {
+            this.websocket.send(agentData);
+        },
+
+        websocketclose(e) {
+            console.log("connection closed (" + e.code + ")");
+        },
+
+    }
 
 
 
-    })
+})
 
 </script>
 </html>

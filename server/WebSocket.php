@@ -1,4 +1,5 @@
 <?php
+
 include(__DIR__.'/../extend/swooleobj/SwooleServer.php');
 use app\common\lib\Message;
 use app\common\lib\Task;
@@ -17,9 +18,9 @@ class WebSocket{
         $this->ws->set(
             [
                 'enable_static_handler' => true,
-                'document_root' => "/home/wsdemo/swooleAndTP5/public/static",
+                'document_root' => "/home/ftplogin/public/static",
                 'worker_num' => 1,
-                'task_worker_num' => 4 ,
+                'task_worker_num' => 1 ,
             ]
         );
 
@@ -58,12 +59,14 @@ class WebSocket{
      * @param $response
      */
     public function onRequest($request, $response) {
-	$response->header('Content-Type','text/html; charset=utf-8');
-	$uri = $request->server['request_uri'];
-	if ($uri == '/favicon.ico') {
-   	     $response->status(404);
-   	     $response->end();
-	}
+        $response->header('Content-Type','text/html; charset=utf-8');
+        $uri = $request->server['request_uri'];
+        if ($uri == '/favicon.ico') {
+            $response->status(404);
+            $response->end();
+        }
+        //暂时无法解决TP5 Request->isGet() 等方法获取请求类型所以暂时使用swoole req 跟 res
+        swooleobj\SwooleServer::getInstance()->setReq($request);
         swooleobj\SwooleServer::getInstance()->setRes($response);
         $_SERVER  =  [];
         if(isset($request->server)) {
@@ -76,13 +79,14 @@ class WebSocket{
                 $_SERVER[strtoupper($k)] = $v;
             }
         }
+        dump($_SERVER);
         $_GET = [];
         if(isset($request->get)) {
             foreach($request->get as $k => $v) {
                 $_GET[$k] = $v;
             }
         }
-	$_COOKIE = [];
+	    $_COOKIE = [];
 		
         if(isset($request->cookie)) {
             foreach($request->cookie as $k => $v) {
@@ -108,7 +112,6 @@ class WebSocket{
         }catch (\Exception $e) {
             // todo
         }
-//	$response->header('Content-Type','text/html; charset=utf-8');
         $res = ob_get_contents();
         ob_end_clean();
         $response->end($res);
@@ -147,8 +150,8 @@ class WebSocket{
      */
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
-	echo $request->fd;
-	
+        echo $request->fd;
+        dump($request);
         \app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
@@ -160,21 +163,17 @@ class WebSocket{
      */
     public function onMessage($ws, $frame) {
         //收到信息后逻辑提交给message类做 
-       // $obj = new Message();
-        //组装信息发送给Meissage类
-	//think\App::run()->send();
-	$data = [
-	    'data' => $frame->data,
-	    'fd' => $frame->fd
-	];
-	$obj = new Message();
-	//$ws->task($data);
+        $data = [
+            'data' => $frame->data,
+            'fd' => $frame->fd
+        ];
+        $obj = new Message();
         $data = $frame->data;
-	$data = json_decode($data,true);
+        $data = json_decode($data,true);
         dump($data);
-	$fromId = $frame->fd;
+        $fromId = $frame->fd;
         $obj->msgHandOut($data,$fromId);
-        
+            
     }
 
     /**

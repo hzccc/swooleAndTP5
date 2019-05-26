@@ -32,20 +32,35 @@
         </div>
     </div>
 </div><!-- /container -->
-<script src="login/js/TweenLite.min.js"></script>
+<script src="login/js/TweenLite.min.js"></script> 
 <script src="login/js/EasePack.min.js"></script>
 <script src="login/js/rAF.js"></script>
 <script src="login/js/demo-1.js"></script>
 </body>
 <script>
+
     //加载弹出层组件
     layui.use('layer',function(){
-        console.log(123);
         var layer = layui.layer;
-
+        $.ajax({
+            url: "index/index/checkLogin",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                console.log(data)
+                if (data.static) {
+                    layer.msg('您已经登录了,三秒后自动跳转');
+                    setInterval(()=>{
+                        window.location.href="chat.html"
+                    },3000)
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+        })
         //登录的点击事件
         $("#sub").on("click",function(){
-           console.log(123);
+           login();
         })
 
         $("body").keydown(function(){
@@ -54,18 +69,19 @@
             }
         })
 
-        //登录函数
+        //登录
         function login(){
             var username = $(" input[ name='username' ] ").val();
             var password = $(" input[ name='password' ] ").val();
             $.ajax({
-                url:"http://47.106.107.177:8811/index/Login/index",
+                url:"index/index/login",
                 data:{"username":username,"password":password},
-                type:"post",
+                type:"POST",
                 dataType:"json",
                 success:function(data){
-                    if(data.success){
-                        window.location = "http://47.106.107.177:8811/chat.html";
+                    console.log(data)
+                    if(data.static){
+                        window.location = "chat.html";
                     }else{
                         layer.msg(data.msg);
                     }

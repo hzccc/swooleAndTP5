@@ -3,41 +3,37 @@ namespace app\index\controller;
 use think\Controller;
 use swooleobj\SwooleServer;
 use app\common\lib\Task;
+use app\common\lib\Predis;
 use think\Request;
+use app\common\ApiResultUtils;
 class Index extends Controller
 {
-    public function index()
-    {
-//	$res = SwooleServer::getInstance();
-//	dump($res);
-//	echo 'index';	
+    public function index() {
     }
     public function demo(){
 	
-//	$res = SwooleServer::getInstance();
-//	$obj = $res->getRes();
-//	dump($obj);
-//	$obj->cookie('test','test');
-	echo request()->action();
+	    echo request()->action();
     }
 
     public function login(){
-        $request = Request::instance();
-        if($request->isGet()){
-	    $res = SwooleServer::getInstance()->getRes();
-	    $userInfo = [
-		'userID' => 1,
-		'userName'=>'黄英雄'
-	    ];
-	    $userInfo = serialize($userInfo);
-	    $res->cookie('userInfo',$userInfo);
-          //  setcookie('userInfo',$userInfo,time()+500,'/');
-            //假装登录
-            $arr = [
-                "status" => 1,
-                "info" => "登录成功",
+        $request = SwooleServer::getInstance();
+        if($request->isPost()){
+            $res = $request->getRes();
+            //获取值
+            $userName = $request->param('username');
+            $userPasswd = $request->param('password');
+            $userId = rand(10,900);
+            //校验登录...
+            //todo
+            $userInfo = [
+                'userID' => $userId,
+                'userName'=>$userName
             ];
-            return json_encode($arr);
+            //序列化
+            $userInfo = serialize($userInfo);
+            $res->cookie('userInfo',$userInfo,time()+3600,'/');
+            //登录成功返回数据
+            return ApiResultUtils::ofSuccess('登录成功');
         }
     }
 
@@ -45,19 +41,19 @@ class Index extends Controller
         $request = Request::instance();
         if($request->isGet()){
             if(empty($_COOKIE['userInfo'])){
-                $arr = [
-                    "status" => 0,
-                    "info" => "请重新登录",
-                ];
-                return json_encode($arr);
+                return ApiResultUtils::ofFail('请重新登录');
             } else {
-                $arr = [
-                    "status" => 1,
-                    "info" => "登录中",
-                ];
-                return json_encode($arr);
+                $userInfo = unserialize($_COOKIE['userInfo']);
+                //比对是否跟redis里面的id映射一致
+                return ApiResultUtils::ofSuccess($userInfo);
             }
         }
+    }
+
+    public function delCookie(){
+
+        $res = SwooleServer::getInstance()->getRes();
+        $res->cookie('userInfo','',time()-60);
     }
     
 }
