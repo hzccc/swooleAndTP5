@@ -31,6 +31,10 @@ class Index extends Controller
             ];
             //序列化
             $userInfo = serialize($userInfo);
+            $userId = $userId;
+            $userName = $userName;
+            $res->cookie('userId',$userId,time()+3600,'/');
+            $res->cookie('userName',$userName,time()+3600,'/');
             $res->cookie('userInfo',$userInfo,time()+3600,'/');
             //登录成功返回数据
             return ApiResultUtils::ofSuccess('登录成功');

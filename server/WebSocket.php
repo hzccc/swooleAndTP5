@@ -79,7 +79,6 @@ class WebSocket{
                 $_SERVER[strtoupper($k)] = $v;
             }
         }
-        dump($_SERVER);
         $_GET = [];
         if(isset($request->get)) {
             foreach($request->get as $k => $v) {
@@ -151,7 +150,6 @@ class WebSocket{
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
         echo $request->fd;
-        dump($request);
         \app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
@@ -170,7 +168,6 @@ class WebSocket{
         $obj = new Message();
         $data = $frame->data;
         $data = json_decode($data,true);
-        dump($data);
         $fromId = $frame->fd;
         $obj->msgHandOut($data,$fromId);
             

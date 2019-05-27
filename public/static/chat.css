@@ -41,6 +41,10 @@ body{
     background-color: aquamarine;
     border-radius: 100%;
     margin:10px;
+    text-align: center;
+    padding-top: 18px;
+    font-size: 18px; 
+    box-sizing: border-box;
 }
 .chat-imgv1{
     height: 60px;
@@ -48,6 +52,10 @@ body{
     background-color: aquamarine;
     border-radius: 100%;
     margin:10px;
+    text-align: center;
+    padding-top: 18px;
+    font-size: 18px;
+    box-sizing: border-box;
 }
 .con{
     display: flex;

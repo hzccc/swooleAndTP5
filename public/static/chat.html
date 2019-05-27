@@ -22,21 +22,21 @@
                 <span v-for="item in conList">
                 <div class="left-content" v-if="item.sign != 1">
                     <div class="chat-img">
-                        <img src="" alt="">
+                        {{item.userName}}
                     </div>
                     <div class="conv1">
-                        <div>2018-09-12 19:23:00</div>
+                        <div>{{item.datetime}}</div>
                         <div class="chat-content">{{item.data}}</div>
                     </div>
                 </div>
 
                 <div class="right-content" v-if="item.sign == 1">
                     <div class="con">
-                        <div>2018-09-12 19:23:00</div>
+                        <div>{{item.datetime}}</div>
                         <div class="chat-contentv1">{{item.data}}</div>
                     </div>
                     <div class="chat-imgv1">
-                        <img src="" alt="">
+                        {{item.userName}}
                     </div>
                 </div>
             </span> 
@@ -83,7 +83,10 @@ var vm = new Vue({
                         type: 'init'
                     }
                     arr = JSON.stringify(arr);
-                    
+                    var strCookie = document.cookie;
+                    var cookie = strCookie.split("; ");
+                    var userId = cookie[2].split("=");
+                    var userName = cookie[3].split("=");
                 } else {
                     window.location.href = "login.html";
 
@@ -99,11 +102,15 @@ var vm = new Vue({
             if (this.sendtxt == '') {
                 alert('发送内容不能为空');
             } else {
+                var strCookie = document.cookie;
+                var cookie = strCookie.split("; ");
+
                 let arr = {
-                    img: '',
+                    userName:this.getcookie(cookie,'userName'),
                     data: this.sendtxt,
                     sign: 1,
-                    type: 'msg'
+                    type: 'msg',
+                    datetime:this.getNowFormatDate()
                 }
                 this.conList.push(arr);
                 arr = JSON.stringify(arr);
@@ -131,10 +138,12 @@ var vm = new Vue({
         },
         websocketonmessage(e) {
             const redata = e;
-            console.log(redata.data);
+            var data = JSON.parse(redata.data)
             let arr = {
                 img: '',
-                data: redata.data
+                data: data.msg,
+                datetime: data.time,
+                userName: data.userName
             };
             this.conList.push(arr);
         },
@@ -146,12 +155,31 @@ var vm = new Vue({
         websocketclose(e) {
             console.log("connection closed (" + e.code + ")");
         },
+        getNowFormatDate() {
+            var date = new Date();
+            var seperator1 = "-";
+            var seperator2 = ":";
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+                + " " + date.getHours() + seperator2 + date.getMinutes()
+                + seperator2 + date.getSeconds();
+            return currentdate;
+        },
+        /* 获取到对应cookie值 */
+        getcookie(cookie,name) {
+            for (var i = 0; i < cookie.length; i++) {
+                var arr = cookie[i].split("=");
+                if (arr[0] == name) {
+                    return arr[1];
+                }
+            }
+        }
 
     }
 
 
 
 })
-
 </script>
 </html>

@@ -47,7 +47,7 @@ class ApiResultUtils
         if (!empty($retData)) {
             $resultMap['data'] = $retData;
         }
-        return json_encode($resultMap);
+        echo json_encode($resultMap);
     }
 
     public static function ofBizCodeSuccess($bizCode,$msg=''){

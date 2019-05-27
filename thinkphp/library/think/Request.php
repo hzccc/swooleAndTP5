@@ -557,7 +557,7 @@ class Request
      * @return bool
      */
     public function isPost()
-    {
+    {   
         return $this->method() == 'POST';
     }
 
@@ -869,9 +869,9 @@ class Request
      */
     public function server($name = '', $default = null, $filter = '')
     {
-        if (empty($this->server)) {
+        // if (empty($this->server)) {
             $this->server = $_SERVER;
-        }
+        // }
         if (is_array($name)) {
             return $this->server = array_merge($this->server, $name);
         }

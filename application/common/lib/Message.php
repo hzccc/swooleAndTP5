@@ -12,15 +12,20 @@ class Message{
         $swooleServer = SwooleServer::getInstance()->getSwooleServer();
         //$data = json_decode($data);
         $type = $data['type'];
-        $data = [
-            'data' => $data['data'],
-            'fd' => $fromId
-        ];
+
         switch($type){
             case 'init':
                 //这里做用户的映射关系
                 break;
             case 'msg':
+                $data = [
+                    'data' =>[
+                        'msg' => $data['data'],
+                        'time' => $data['datetime'],
+                        'userName' => $data['userName']
+                    ], 
+                    'fd' => $fromId
+                ];
                 $swooleServer->task($data);
                 break;
         }
