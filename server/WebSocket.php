@@ -1,9 +1,11 @@
 <?php
 
-include(__DIR__.'/../extend/swooleobj/SwooleServer.php');
+require(__DIR__.'/../extend/swooleobj/SwooleServer.php');
+//require(__DIR__.'/../extend/mysqlpool/MysqlPool.php');
 use app\common\lib\Message;
 use app\common\lib\Task;
 use app\common\lib\Predis;
+use mysqlpool\MysqlPool;
 class WebSocket{
     CONST HOST = "0.0.0.0";
     CONST PORT = 8811;
@@ -19,8 +21,8 @@ class WebSocket{
             [
                 'enable_static_handler' => true,
                 'document_root' => "/home/ftplogin/public/static",
-                'worker_num' => 1,
-                'task_worker_num' => 1 ,
+                'worker_num' => 4,
+                'task_worker_num' => 4 ,
             ]
         );
 
@@ -51,6 +53,10 @@ class WebSocket{
         define('APP_PATH', __DIR__ . '/../application/');
         // 加载框架里面的文件
         require __DIR__ . '/../thinkphp/start.php';
+        if(!$server->taskworker){
+            MysqlPool::getInstance()->init();
+        }
+        
     }
 
     /**
@@ -90,7 +96,7 @@ class WebSocket{
         if(isset($request->cookie)) {
             foreach($request->cookie as $k => $v) {
                 $_COOKIE[$k] = $v;
-            }
+            } 
         }
         $_FILES = [];
         if(isset($request->files)) {
@@ -104,16 +110,11 @@ class WebSocket{
                 $_POST[$k] = $v;
             }
         }
-        ob_start();
-        // 执行应用并响应
         try {
             think\App::run()->send();
         }catch (\Exception $e) {
-            // todo
+            
         }
-        $res = ob_get_contents();
-        ob_end_clean();
-        $response->end($res);
     }
 
     /**
@@ -149,7 +150,7 @@ class WebSocket{
      */
     public function onOpen($ws, $request) {
         // 记录fd与用户名关系
-        echo $request->fd;
+        dump($request);
         \app\common\lib\Predis::getInstance()->sAdd($request->fd);
         
     }
@@ -181,7 +182,7 @@ class WebSocket{
     public function onClose($ws, $fd) {
         // fd del
         \app\common\lib\Predis::getInstance()->sRem($fd);
-        echo "clientid:{$fd}\n";
+        // echo "clientid:{$fd}\n";
     }
 
 }

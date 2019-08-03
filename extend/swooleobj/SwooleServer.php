@@ -62,6 +62,11 @@ class SwooleServer{
     }
     /* 获取post参数 */
     public function param($val){
-        return $this->req->post[$val];
+        if(empty($val)){ 
+            return $this->req->post;
+        } else {
+            return $this->req->post[$val];
+        }
+        
     }
 }

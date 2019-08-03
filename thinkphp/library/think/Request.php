@@ -411,12 +411,12 @@ class Request
                 $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
 		
             }
-	   unset($_SERVER['PATH_INFO']); 
+	        unset($_SERVER['PATH_INFO']); 
             // 分析PATHINFO信息
             if (!isset($_SERVER['PATH_INFO'])) {
                 foreach (Config::get('pathinfo_fetch') as $type) {
                     if (!empty($_SERVER[$type])){
-			$_SERVER['PATH_INFO'] =  $_SERVER[$type];
+			            $_SERVER['PATH_INFO'] =  $_SERVER[$type];
                        // $_SERVER['PATH_INFO'] = (0 === strpos($_SERVER[$type], $_SERVER['SCRIPT_NAME'])) ?  substr($_SERVER[$type], strlen($_SERVER['SCRIPT_NAME'])) : $_SERVER[$type];
                         break;
                     }

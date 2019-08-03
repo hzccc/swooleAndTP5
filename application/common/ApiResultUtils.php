@@ -7,7 +7,7 @@
  */
 
 namespace app\common;
-
+use swooleobj\SwooleServer;
 class ApiResultUtils
 {
     /**
@@ -23,21 +23,8 @@ class ApiResultUtils
     public static $IllegalBuffer = -41003;
     public static $DecodeBase64Error = -41004;
 
-    public static function ofSuccessv1($retData,$msg='') {
-        $resultMap = array();
-        $resultMap['code'] = 'success';
-        if (!empty($msg)) {
-            $resultMap['message'] = $msg;
-        }
-        if (!empty($retData)) {
-            $resultMap['data'] = $retData;
-        }
-        return $resultMap;
-    }
-
-
-
     public static function ofSuccess($retData,$msg='') {
+        $res = SwooleServer::getInstance()->getRes();
         $resultMap = array();
         $resultMap['static'] = 1;
         $resultMap['code'] = 'success';
@@ -47,19 +34,7 @@ class ApiResultUtils
         if (!empty($retData)) {
             $resultMap['data'] = $retData;
         }
-        echo json_encode($resultMap);
-    }
-
-    public static function ofBizCodeSuccess($bizCode,$msg=''){
-        $resultMap = array();
-        $resultMap['code'] = 'success';
-        if (!empty($msg)) {
-            $resultMap['message'] = $msg;
-        }
-        if (!empty($bizCode)) {
-            $resultMap['bizCode'] = $bizCode;
-        }
-        return json_encode($resultMap);
+        $res->end(json_encode($resultMap));
     }
     public static function ofPageSuccess($retData,$total) {
         $resultMap = array();
@@ -80,6 +55,7 @@ class ApiResultUtils
      * @return string
      */
     public static function ofFail($errMsg) {
+        $res = SwooleServer::getInstance()->getRes();
         $resultMap = array();
         $resultMap['static'] = 0;
         $resultMap['code'] = 'fail';
@@ -87,16 +63,7 @@ class ApiResultUtils
             $resultMap['message'] = $errMsg;
         }
 
-        return json_encode($resultMap);
-    }
-    public static function ofFailv1($errMsg) {
-        $resultMap = array();
-        $resultMap['code'] = 'fail';
-        if (!empty($errMsg)) {
-            $resultMap['message'] = $errMsg;
-        }
-
-        return $resultMap;
+        $res->end(json_encode($resultMap));
     }
     /**
     * 判断参数是否存在
